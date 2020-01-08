@@ -16,14 +16,29 @@ import com.website.web.model.Client;
  */
 public class GetLoginController extends HttpServlet {
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String email_address = request.getParameter("email_address");
+		String password = request.getParameter("password");
 		ClientDao dao = new ClientDao();
-		Client c1 = dao.getClient(email_address);
+		Client c1 = dao.getClient(email_address, password);
 
 		request.setAttribute("client", c1);
-		RequestDispatcher rd = request.getRequestDispatcher("ShowClient.jsp");
-		rd.forward(request, response);
+//		RequestDispatcher rd = request.getRequestDispatcher("ShowClient.jsp");
+		if (c1.getFullName() == null) {
+			response.sendRedirect("loginError.jsp");
+		}
+		else {
+			RequestDispatcher rd = request.getRequestDispatcher("ShowClient.jsp");
+			rd.forward(request, response);
+		// alternatively you could use session object instead of request object:
+		// HttpSession session = request.getSession();
+		// session.setAttribute("client",c1);
+		}
+
+		// response.sendRedirect("ShowClient.jsp"); would reveal the showClient url to
+		// client
 	}
+	// protected doPost()
 
 }
